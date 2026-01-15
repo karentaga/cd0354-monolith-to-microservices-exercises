@@ -12,15 +12,48 @@ jobs:
       # Specify the version you desire here
       # See: https://circleci.com/developer/images/image/cimg/base
       - image: cimg/base:current
-
+    working_directory: ~/project
     # Add steps to the job
     # See: https://circleci.com/docs/guides/orchestrate/jobs-steps/#steps-overview & https://circleci.com/docs/reference/configuration-reference/#steps
     steps:
-      # Checkout the code as the first step.
-      - checkout
       - run:
           name: "Say hello"
           command: "echo Hello, World!"
+      # 1️⃣ Checkout the repo
+      - checkout
+
+      # 2️⃣ Ensure we are on the correct branch
+      - run:
+          name: Checkout circleci-project-setup branch
+          command: |
+            git fetch origin circleci-project-setup
+            git checkout circleci-project-setup
+
+      # 3️⃣ Debug: cd, verify Dockerfile is present
+      - run:
+          name: Verify Dockerfile
+          command: |  
+            cd lesson-6-kubernetes-for-production
+            cd exercises
+            cd simple-express
+            pwd
+            ls -la
+            ls -la Dockerfile
+
+      # 4️⃣ Setup Docker engine
+      - setup_remote_docker
+      # 5️⃣ Build and push Docker image
+      - run:
+          name: Build and push Docker image
+          command: |
+            # Build the image
+            docker build -t karenht/simple-express-app:1.0.0 .
+            
+            # Log in to Docker Hub
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+            
+            # Push the image
+            docker push karenht/simple-express-app:1.0.0        
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/guides/orchestrate/workflows/ & https://circleci.com/docs/reference/configuration-reference/#workflows
