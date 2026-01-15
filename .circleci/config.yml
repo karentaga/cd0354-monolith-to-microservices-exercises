@@ -32,10 +32,9 @@ jobs:
       # 3️⃣ Debug: cd, verify Dockerfile is present
       - run:
           name: Verify Dockerfile
-          command: |  
-            cd lesson-6-kubernetes-for-production
-            cd exercises
-            cd simple-express
+          command: |
+            cd lesson-6-kubernetes-for-production/exercises/simple-express
+
             pwd
             ls -la
             ls -la Dockerfile
@@ -46,6 +45,8 @@ jobs:
       - run:
           name: Build and push Docker image
           command: |
+            cd lesson-6-kubernetes-for-production/exercises/simple-express
+
             # Build the image
             docker build -t karenht/simple-express-app:1.0.0 .
             
